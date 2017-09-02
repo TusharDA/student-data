@@ -91,11 +91,11 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
-            <li class="treeview">
+         <!--   <li class="treeview">
               <a href="<?php echo base_url(); ?>dashboard">
                 <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
               </a>
-            </li>
+            </li>-->
             
             <?php
             if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
@@ -108,9 +108,15 @@
             {
             ?>
 			<li class="treeview">
-              <a href="<?php echo base_url('user/newstudent'); ?>">
+              <a href="<?php echo base_url('user/'); ?>">
                 <i class="fa fa-cogs"></i>
-                <span>Students</span>
+                <span>Data Entry Operator</span>
+              </a>
+            </li>
+			<li class="treeview">
+              <a href="<?php echo base_url('user/moderator_dash'); ?>">
+                <i class="fa fa-cogs"></i>
+                <span>Moderator</span>
               </a>
             </li>
 			<?php

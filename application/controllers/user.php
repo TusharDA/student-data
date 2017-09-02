@@ -31,6 +31,13 @@ class User extends BaseController
         $this->loadViews("dashboard", $this->global, NULL , NULL);
     }
     
+	public function moderator_dash()
+    {
+        $this->global['pageTitle'] = 'CodeInsect : Dashboard';
+        
+        $this->loadViews("moderator_dashboard", $this->global, NULL , NULL);
+    }
+    
     /**
      * This function is used to load the user list
      */
