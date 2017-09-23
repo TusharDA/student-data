@@ -198,8 +198,8 @@ class Login extends CI_Controller
         
         $this->load->library('form_validation');
         
-        $this->form_validation->set_rules('password','Password','required|max_length[20]');
-        $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
+            $this->form_validation->set_rules('password','Password','required|max_length[20]');
+            $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
         
         if($this->form_validation->run() == FALSE)
         {

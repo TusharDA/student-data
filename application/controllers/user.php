@@ -2,6 +2,10 @@
 
 require APPPATH . '/libraries/BaseController.php';
 
+
+ 
+
+
 /**
  * Class : User (UserController)
  * User Class to control all user related operations.
@@ -17,7 +21,12 @@ class User extends BaseController
     public function __construct()
     {
         parent::__construct();
+		$this->load->library('upload');
+		$this->load->database();
+		$this->load->helper('url');
+		$this->load->helper('form');
         $this->load->model('user_model');
+		
         $this->isLoggedIn();   
     }
     
@@ -30,11 +39,75 @@ class User extends BaseController
         
         $this->loadViews("dashboard", $this->global, NULL , NULL);
     }
+    public function select ($search)
+    {
+            $this->load->model('user_model');
+            if(isset($_GET ['search']) && !empty($_GET['search'])) {
+                $search= $_GET[ 'search'];
+                $this->load->model('Login_model');
+                if($this->user_model->selectorganizer($search))
+                {
+                   $this->load->view('studentview');
+                }
+                else
+                {
+                    redirect('user/index');
+                }
+            }  
+        } 
     
+	public function moderator_dash()
+    {
+        $this->global['pageTitle'] = 'CodeInsect : Dashboard';
+        
+        $this->loadViews("moderator_dashboard", $this->global, NULL , NULL);
+    }
+    function home()
+	{
+		if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+		else
+		{
+               // $this->loadViews("newstudent",$this->global,NULL);
+                
+                $this->global['pageTitle'] = 'Student : student Listing';
+                $this->loadViews("home", $this->global,  NULL);
+		}
+			
+    }
+   
     /**
      * This function is used to load the user list
      */
-    function userListing()
+     function userListing()
+     {
+         if($this->isAdmin() == TRUE)
+         {
+             $this->loadThis();
+         }
+         else
+         {
+             $this->load->model('user_model');
+         
+              $searchText = $this->input->post('searchText');
+              $data['searchText'] = $searchText;
+             
+           // $this->load->library('pagination');
+             
+           // $count = $this->user_model->userListingCount($searchText);
+ 
+            // $returns = $this->paginationCompress ( "userListing/", $count, 5 );
+             
+           $data['userRecords'] = $this->user_model->userListing();
+             
+             $this->global['pageTitle'] = 'CodeInsect : User Listing';
+             
+             $this->loadViews("users", $this->global, $data, NULL);
+         }
+     }
+	function viewstudentlist()
     {
         if($this->isAdmin() == TRUE)
         {
@@ -42,25 +115,85 @@ class User extends BaseController
         }
         else
         {
+			$deptresult = $this->user_model->studentListingCount();  
+            $data['deptlist'] = $deptresult;
+            $this->global['pageTitle'] = 'Student : student Listing';
+            $this->loadViews("studentview", $this->global, $data, NULL);
+			
+        }
+    }
+    
+	function view_data_entry_operator()
+	{
+		if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+		  else
+        {
+			
             $this->load->model('user_model');
         
             $searchText = $this->input->post('searchText');
             $data['searchText'] = $searchText;
-            
-            $this->load->library('pagination');
-            
-            $count = $this->user_model->userListingCount($searchText);
-
-			$returns = $this->paginationCompress ( "userListing/", $count, 5 );
-            
-            $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
-            
-            $this->global['pageTitle'] = 'CodeInsect : User Listing';
-            
-            $this->loadViews("users", $this->global, $data, NULL);
+            $deptresult = $this->user_model->get_data_entry_operator($searchText); 
+            $data['deptlist'] = $deptresult;
+            $this->global['pageTitle'] = 'Student : student Listing';
+            $this->loadViews("data_entry_view", $this->global, $data, NULL);
         }
+			
     }
+    function view_modrator()
+	{
+		if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+		  else
+        {
+			
+            $this->load->model('user_model');
+        
+            $searchText = $this->input->post('searchText');
+            $data['searchText'] = $searchText;
+            $deptresult = $this->user_model->get_Moderator($searchText); 
+            $data['deptlist'] = $deptresult;
+            $this->global['pageTitle'] = 'Student : student Listing';
+            $this->loadViews("mod_view", $this->global, $data, NULL);
+        }
+			
+	}
+	
+	
+     function editmod()
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+            $data['roles'] = $this->user_model->getUserRoles();
+            $data['userInfo'] = $this->user_model->get_Moderator();
+            $this->global['pageTitle'] = 'Student : Edit User';
+            $this->loadViews("editmoderator", $this->global, $data, NULL);
+        }
+    }	
 
+    function editdataentry()
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+            $data['roles'] = $this->user_model->getUserRoles();
+            $data['userInfo'] = $this->user_model->get_data_entry_operator();
+            $this->global['pageTitle'] = 'Student : Edit User';
+            $this->loadViews("editmoderator", $this->global, $data, NULL);
+        }
+    }	
     /**
      * This function is used to load the add new form
      */
@@ -74,9 +207,7 @@ class User extends BaseController
         {
             $this->load->model('user_model');
             $data['roles'] = $this->user_model->getUserRoles();
-            
             $this->global['pageTitle'] = 'CodeInsect : Add New User';
-
             $this->loadViews("addNew", $this->global, $data, NULL);
         }
     }
@@ -89,13 +220,11 @@ class User extends BaseController
     {
         $userId = $this->input->post("userId");
         $email = $this->input->post("email");
-
         if(empty($userId)){
             $result = $this->user_model->checkEmailExists($email);
         } else {
             $result = $this->user_model->checkEmailExists($email, $userId);
         }
-
         if(empty($result)){ echo("true"); }
         else { echo("false"); }
     }
@@ -108,12 +237,11 @@ class User extends BaseController
         }
 		else
 		{
-				$this->loadViews("editOld",$this->global,NULL);
+                $this->global['pageTitle'] = 'Student : student Listing';
+                $this->loadViews("newstudent", $this->global,  NULL);
 		}
 			
-	}
-	
-	
+    }
 		function newstudent()
 	{
 		if($this->isAdmin() == TRUE)
@@ -122,43 +250,24 @@ class User extends BaseController
         }
 	    else
 		{
-            // $this->load->library('form_validation');
-
-			// $this->form_validation->set_rules('first_name','First Name','trim|required|max_length[128]|xss_clean');
-			// $this->form_validation->set_rules('last_name','Last Name','trim|required|max_length[128]|xss_clean');
-			// $this->form_validation->set_rules('std','standard','trim|required|numeric');
-			// $this->form_validation->set_rules('user_name','User Name','trim|required|max_length[128]|xss_clean');
-			// $this->form_validation->set_rules('user_password','Password','required|max_length[20]');
-            // $this->form_validation->set_rules('confirm_password','Confirm Password','trim|required|matches[password]|max_length[20]');
-			// $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-			// $this->form_validation->set_rules('contact_no','Contact No','required|min_length[10]|xss_clean');
-			
-			
-				// $first_name = ucwords(strtolower($this->input->post('first_name')));
-				// $last_name = ucwords(strtolower($this->input->post('last_name')));
-				// $std = $this->input->post('std');
-				// $email = $this->input->post('email');
-				// $user_name = $this->input->post('user_name');
-				// $password = $this->input->post('password');
-				// $contact_no = $this->input->post('contact_no');
-			
-		     	// $this->load->model('user_model');
-                // $result = $this->user_model->addNewStudent($studid);
-			
-			//$this->global['pageTitle'] = 'CodeInsect : Add New Student';
-			$post_data=array('stud_id'=>$this->input->post('stud_id'),
+           
+			/* $post_data=array('stud_id'=>$this->input->post('stud_id'),
 			'first_name'=>$this->input->post('first_name'),
 			'last_name'=>$this->input->post('last_name'),
 			'standard'=>$this->input->post('std'),
 			'division'=>$this->input->post('div'),
-			'user_name'=>$this->input->post('user_name'),
-			'user_password'=>$this->input->post('user_password'),
 			'email_address'=>$this->input->post('email'),
-			'contact_no'=>$this->input->post('contact_no')
+			'student_dob'=>$this->input->post('student_dob'),
+			'contact_no'=>$this->input->post('contact_no'),
+			'laddress'=>$this->input->post('laddress'),
+			'padress'=>$this->input->post('padress'),
+			'doc_file'=>$this->input->post('full_path')
+			
 			);
 			
-			$insert_student=$this->user_model->addNewStudent($post_data);
+			$insert_student=$this->user_model->addNewStudent($post_data); */
 				$this->loadViews("newstudent",$this->global,NULL);
+				
 		
 	}
 	
@@ -241,8 +350,27 @@ class User extends BaseController
             $this->loadViews("editOld", $this->global, $data, NULL);
         }
     }
+    function editOldstudent($stud_id)
     
-    
+        {
+            if($this->isAdmin() == TRUE)
+            {
+                $this->loadThis();
+            }
+            else
+            {
+                 $data['Student_data'] = $this->user_model->get_student_id($stud_id);    
+                 $this->global['pageTitle'] = 'Student : Edit User';
+                 $this->loadViews("edit_student", $this->global, $data, NULL);
+            }
+        }
+    public function delete_row($stud_id) 
+        {   
+            $this->user_model->did_delete_row($stud_id);
+            redirect('user/viewstudentlist');
+        
+        }
+  
     /**
      * This function is used to edit the user information
      */
@@ -301,13 +429,11 @@ class User extends BaseController
                 {
                     $this->session->set_flashdata('error', 'User updation failed');
                 }
-                
                 redirect('userListing');
             }
         }
     }
-
-
+	
     /**
      * This function is used to delete the user using userId
      * @return boolean $result : TRUE / FALSE
@@ -345,8 +471,6 @@ class User extends BaseController
         
         $this->loadViews("settings");
     }
-    
-    
     /**
      * This function is used to change the password of the user
      */
@@ -366,7 +490,6 @@ class User extends BaseController
         {
             $oldPassword = $this->input->post('oldPassword');
             $newPassword = $this->input->post('newPassword');
-            
             $resultPas = $this->user_model->matchOldPassword($this->vendorId, $oldPassword);
             
             if(empty($resultPas))
@@ -388,13 +511,91 @@ class User extends BaseController
             }
         }
     }
-
+		function viewupload()
+	{
+		if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+		else
+		{
+				$this->loadViews("upload",$this->global,NULL);
+		}
+			
+	}
+	
+	function upload_data()
+	{
+		ini_set('memory_limit', '512M');
+			ini_set('max_execution_time', '180');
+			//$data["DataMaping"] = $this->Data_transform_model->get_datamaping_details();			
+			if($_POST == NULL)
+			{
+				$this->load->view("upload",$data);
+			}
+			else
+			{
+				/*-----------------------File Upload---------------------*/
+				$config['upload_path'] = './Data_uploads/';
+				$config['allowed_types'] = 'xlsx|xls|csv';
+				$config['max_size'] = '50000';
+				$config['max_width'] = '1920';
+				$config['max_height'] = '1280';	
+				$config['encrypt_name'] = 'false';
+				$config['overwrite'] = 'true';
+				
+				$this->load->library('upload', $config);
+				$this->upload->initialize($config);		
+			}				
+				
+    }
+    function deactivated_stud()
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+			$this->load->model('user_model');
+			$deptresult = $this->user_model->getDeactivatedStudent(); 
+            $data['deptlist'] = $deptresult;
+            $this->global['pageTitle'] = 'Student : Edit User';
+            $this->loadViews("deactiveStudents", $this->global, $data, NULL);
+        }
+    }
+	public function load_student_report()
+    {
+			$data['result'] = $this->user_model->studentListingCount();
+            $this->load->view('report',$data);
+    }
+    function search_student()
+    {
+        $keyword    =   $this->input->post('keyword');
+        $data['results']    =   $this->user_model->search($keyword);
+        $this->global['pageTitle'] = 'Student : student Listing';
+        $this->loadViews("search_student", $this->global, $data, NULL);
+    }
+    function search_user()
+    {
+        $keyword    =   $this->input->post('keyword');
+        $data['results']    =   $this->user_model->search_users($keyword);
+        $this->global['pageTitle'] = 'Student : student Listing';
+        $this->loadViews("search_users", $this->global, $data, NULL);
+    }
+	function search_data_entry_operator()
+    {
+        $keyword    =   $this->input->post('keyword');
+        $data['results']    =   $this->user_model->search_data_entry($keyword);
+        $this->global['pageTitle'] = 'Student : student Listing';
+        $this->loadViews("search_data_entry", $this->global, $data, NULL);
+    }
     function pageNotFound()
     {
         $this->global['pageTitle'] = 'Student : 404 - Page Not Found';
-        
         $this->loadViews("404", $this->global, NULL, NULL);
     }
+
 }
 
 ?>

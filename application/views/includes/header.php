@@ -34,13 +34,14 @@
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+	
   </head>
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
       
       <header class="main-header">
         <!-- Logo -->
-        <a href="<?php echo base_url(); ?>" class="logo">
+        <a href="<?php echo base_url('user/home'); ?>" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>CSD</b></span>
           <!-- logo for regular state and mobile devices -->
@@ -91,11 +92,11 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
-            <li class="treeview">
+         <!--   <li class="treeview">
               <a href="<?php echo base_url(); ?>dashboard">
                 <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
               </a>
-            </li>
+            </li>-->
             
             <?php
             if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
@@ -107,21 +108,84 @@
             if($role == ROLE_ADMIN)
             {
             ?>
+            <li class="treeview">
+            <a href="<?php echo base_url('user/home'); ?>">
+              <i class="fa fa-cogs"></i>
+              <span>Dashboard</span>
+              </a>
+              </li>
 			<li class="treeview">
-              <a href="<?php echo base_url('user/newstudent'); ?>">
+                                <a href="<?php echo site_url('user/viewstudentlist');?>">
+                                    
+                                            <i class="fa fa-barcode"></i> <span>Student</span>
+                                        </a>
+                                    </li>
+
+
+	<!---------------------------------------------------------------------------------------------------->	
+	     <li class="treeview">
+                                                <a href="<?php echo site_url('user/moderator_dash');?>">
+                                                    <i class="fa fa-cubes"></i>
+                                                    <span>Moderator</span>
+                                                    <i class="fa fa-angle-left pull-right"></i>
+                                                </a>
+                                                <ul class="treeview-menu" style="max-height: 90px;overflow-y: auto;overflow-x: hidden;">
+                                                    <li>
+                                                        <a href="<?php echo site_url('user/viewstudentlist');?>">
+                                                            <i class="fa fa-barcode"></i> <span>Student List</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="<?php echo site_url('user/view_data_entry_operator');?>">
+                                                            <i class="fa fa-barcode"></i> <span>Data Entry list</span>
+                                                        </a>
+                                                    </li>
+													<li>
+                                                        <a href="<?php echo site_url('user/deactivated_stud');?>">
+                                                            <i class="fa fa-barcode"></i> <span>Deactive Student list</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+	<!---------------------------------------------------------------------------------------------------->	
+	<li class="treeview">
+                                <a href="<?php echo site_url('user/userListing');?>">
+                                    <i class="fa fa-user"></i>
+                                    <span>User Settings</span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </a>
+                                <ul class="treeview-menu" style="max-height: 90px;overflow-y: auto;overflow-x: hidden;">
+                                    <li>
+                                        <a href="<?php echo site_url('user/userListing');?>">
+                                            <i class="fa fa-barcode"></i> <span>User List</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+	<!---------------------------------------------------------------------------------------------------->	
+			<!--<li class="treeview">
+              <a href="<?php //echo base_url('user/'); ?>">
                 <i class="fa fa-cogs"></i>
-                <span>Students</span>
+                <span>Data Entry Operator</span>
+
+			
               </a>
             </li>
+			<li class="treeview">
+              <a href="<?php //echo base_url('user/moderator_dash'); ?>">
+                <i class="fa fa-cogs"></i>
+                <span>Moderator</span>
+              </a>
+            </li>-->
 			<?php
 			 
 			?>
-            <li class="treeview">
-              <a href="<?php echo base_url('user/editOld'); ?>">
+          <!--  <li class="treeview">
+              <a href="<?php// echo base_url('user/editOld'); ?>">
                 <i class="fa fa-cogs"></i>
                 <span>User Settings</span>
               </a>
-            </li>
+            </li>-->
             <?php
             }
             ?>

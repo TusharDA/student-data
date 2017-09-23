@@ -97,6 +97,7 @@ class BaseController extends CI_Controller {
         $this->load->view('includes/footer', $footerInfo);
     }
 	
+	    
 	/**
 	 * This function used provide the pagination resources
 	 * @param {string} $link : This is page link
