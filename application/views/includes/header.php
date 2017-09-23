@@ -115,6 +115,7 @@
               </a>
               </li>
 			<li class="treeview">
+<<<<<<< HEAD
                                 <a href="<?php echo site_url('user/viewstudentlist');?>">
                                     
                                             <i class="fa fa-barcode"></i> <span>Student</span>
@@ -169,6 +170,17 @@
                 <span>Data Entry Operator</span>
 
 			
+=======
+              <a href="<?php echo base_url('user/'); ?>">
+                <i class="fa fa-cogs"></i>
+                <span>Data Entry Operator</span>
+              </a>
+            </li>
+			<li class="treeview">
+              <a href="<?php echo base_url('user/moderator_dash'); ?>">
+                <i class="fa fa-cogs"></i>
+                <span>Moderator</span>
+>>>>>>> ff6cfda8934382dcfd113314f3d0a98ed9cdc548
               </a>
             </li>
 			<li class="treeview">

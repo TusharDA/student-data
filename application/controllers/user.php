@@ -62,6 +62,7 @@ class User extends BaseController
         
         $this->loadViews("moderator_dashboard", $this->global, NULL , NULL);
     }
+<<<<<<< HEAD
     function home()
 	{
 		if($this->isAdmin() == TRUE)
@@ -78,6 +79,9 @@ class User extends BaseController
 			
     }
    
+=======
+    
+>>>>>>> ff6cfda8934382dcfd113314f3d0a98ed9cdc548
     /**
      * This function is used to load the user list
      */
